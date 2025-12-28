@@ -2,7 +2,7 @@ mod main_window;
 
 pub use main_window::*;
 use rand::{self, seq::index::sample_weighted};
-use slint::{ModelRc, VecModel};
+use slint::{Model, ModelRc, VecModel};
 
 #[derive(Debug, Clone)]
 pub struct GameConfig {
@@ -42,7 +42,7 @@ pub fn new_grid(game_config: &GameConfig) -> Vec<ModelRc<Tile>> {
     buttons_grid
 }
 
-pub fn fill_grid(game_config: &GameConfig, first_move: Position) -> Vec<ModelRc<Tile>> {
+pub fn fill_grid(game_config: &GameConfig, first_move: Position) -> Vec<Vec<Tile>> {
     // Making First Button not be a bomb
     let mut zero_weights = surronding_indicies(game_config, &first_move);
     zero_weights.push(position_to_index(game_config, &first_move));
@@ -105,18 +105,44 @@ pub fn fill_grid(game_config: &GameConfig, first_move: Position) -> Vec<ModelRc<
     }
 
     // Showing clicked Button and Around
-    for index in zero_weights {
-        let position = index_to_position(game_config, index);
-        let tile = &mut buttons_grid[position.row as usize][position.col as usize];
-        tile.visible = true;
-    }
+    buttons_grid[first_move.row as usize][first_move.col as usize].visible = true;
+    expand_selection(game_config, &first_move, &mut buttons_grid);
+    buttons_grid
+}
 
-    // Converting to Ui Model
-    let mut buttons_grid_model = Vec::new();
-    for row_vec in buttons_grid {
-        buttons_grid_model.push(VecModel::from_slice(&row_vec));
+pub fn model_grid_to_vec2d(model: ModelRc<ModelRc<Tile>>) -> Vec<Vec<Tile>> {
+    let model_vec: Vec<_> = model.iter().collect();
+
+    let mut tiles_vec = Vec::new();
+    for model in model_vec {
+        let tiles: Vec<_> = model.iter().collect();
+        tiles_vec.push(tiles);
     }
-    buttons_grid_model
+    tiles_vec
+}
+
+pub fn vec2d_to_model_grid(tiles: Vec<Vec<Tile>>) -> ModelRc<ModelRc<Tile>> {
+    let mut grid_model = Vec::new();
+    for row in tiles {
+        grid_model.push(VecModel::from_slice(&row));
+    }
+    VecModel::from_slice(&grid_model)
+}
+
+pub fn expand_selection(game_config: &GameConfig, position: &Position, tiles: &mut Vec<Vec<Tile>>) {
+    if tiles[position.row as usize][position.col as usize].value == 0 {
+        let around = surronding_indicies(game_config, position);
+        for index in around {
+            let pos = index_to_position(game_config, index);
+            let tile = &mut tiles[pos.row as usize][pos.col as usize];
+            if !tile.flagged && !tile.visible {
+                tile.visible = true;
+                if tile.value == 0 {
+                    expand_selection(game_config, &tile.position.clone(), tiles);
+                }
+            }
+        }
+    }
 }
 
 #[inline]

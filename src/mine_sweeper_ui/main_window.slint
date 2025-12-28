@@ -33,6 +33,7 @@ export component MainWindow inherits Window {
 
     // callbacks
     callback first_move_occured(position: Position);
+    callback expand_selection(position: Position);
     callback restart();
     callback close();
 
@@ -112,6 +113,7 @@ export component MainWindow inherits Window {
                                         if button.value == mine_value {
                                             root.state = GameState.Lose;
                                         }
+                                        expand_selection(button.position);
                                     }
                                 }
                             }
