@@ -6,10 +6,18 @@ import {
 } from "std-widgets.slint";
 
 export component AboutDialog inherits Dialog {
-    title: "About Slint";
+    title: "About";
+    in property <string> version;
+    in property <string> home_page;
+    in property <string> license;
+    in property <length> font-size <=> self.default-font-size;
     icon: @image-url("resources/icons/info.svg");
     callback close();
     VerticalBox {
+        Text {
+            text: "Version: \{version}\nHomePage: \{home_page}\nLicense: \{license}";
+        }
+
         AboutSlint {
             vertical-stretch: 1.0;
         }

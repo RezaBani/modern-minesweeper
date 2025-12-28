@@ -12,6 +12,7 @@ export component MainWindow inherits Window {
     in property <int> mine_value;
     in property <[[Tile]]> grid;
     in property <GameState> state: Initial;
+    in property <length> font-size <=> self.default-font-size;
     in-out property <GameDifficulty> difficulty: GameDifficulty.Medium;
     in-out property <int> flags;
 
@@ -61,7 +62,6 @@ export component MainWindow inherits Window {
 
     title: "MineSweeper";
     icon: @image-url("resources/icons/minesweeper.svg");
-    default-font-size: 28px;
     preferred-width: 1280px;
     preferred-height: 720px;
 
@@ -123,7 +123,7 @@ export component MainWindow inherits Window {
             padding-left: 10px;
             padding-right: 10px;
             spacing: 10px;
-            Text {
+            state_text := Text {
                 horizontal-alignment: center;
                 vertical-alignment: center;
                 text: state == GameState.Lose ? "State: Game Over" : state == GameState.Win ? "State: You Won" : "State: Normal";
@@ -137,12 +137,15 @@ export component MainWindow inherits Window {
             }
 
             easy_btn := Rectangle {
-                background: difficulty == GameDifficulty.Easy ? #95959f : Colors.transparent;
+                border-width: 4px;
+                border-radius: 12px;
+                border-color: difficulty == GameDifficulty.Easy ? #95959f : Colors.transparent;
                 Text {
                     text: "Easy";
+                    color: easy_btn_area.enabled ? state_text.color : #95959f;
                 }
 
-                TouchArea {
+                easy_btn_area := TouchArea {
                     enabled: root.state == GameState.Initial;
                     clicked => {
                         difficulty = GameDifficulty.Easy;
@@ -152,12 +155,15 @@ export component MainWindow inherits Window {
             }
 
             med_btn := Rectangle {
-                background: difficulty == GameDifficulty.Medium ? #95959f : Colors.transparent;
+                border-width: 4px;
+                border-radius: 12px;
+                border-color: difficulty == GameDifficulty.Medium ? #95959f : Colors.transparent;
                 Text {
                     text: "Medium";
+                    color: med_btn_area.enabled ? state_text.color : #95959f;
                 }
 
-                TouchArea {
+                med_btn_area := TouchArea {
                     enabled: root.state == GameState.Initial;
                     clicked => {
                         difficulty = GameDifficulty.Medium;
@@ -167,12 +173,15 @@ export component MainWindow inherits Window {
             }
 
             hard_btn := Rectangle {
-                background: difficulty == GameDifficulty.Hard ? #95959f : Colors.transparent;
+                border-width: 4px;
+                border-radius: 12px;
+                border-color: difficulty == GameDifficulty.Hard ? #95959f : Colors.transparent;
                 Text {
                     text: "Hard";
+                    color: hard_btn_area.enabled ? state_text.color : #95959f;
                 }
 
-                TouchArea {
+                hard_btn_area := TouchArea {
                     enabled: root.state == GameState.Initial;
                     clicked => {
                         difficulty = GameDifficulty.Hard;

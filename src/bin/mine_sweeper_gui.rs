@@ -21,10 +21,12 @@ fn main() -> Result<(), slint::PlatformError> {
     // Empty Grid
     let tiles = Rc::new(RefCell::new(new_grid(&*game_config.borrow())));
     let model = vec2d_to_model_grid(&*tiles.borrow());
+    let font_size = 28.0;
     main_window.set_grid(model);
     main_window.set_state(GameState::Initial);
     main_window.set_mine_value(MINE_VALUE);
     main_window.set_flags(game_config.borrow().mine_count as i32);
+    main_window.set_font_size(font_size);
 
     // First Move Occured
     let main_window_weak = main_window.as_weak();
@@ -120,8 +122,12 @@ fn main() -> Result<(), slint::PlatformError> {
     });
 
     // About
-    main_window.on_about(|| {
+    main_window.on_about(move || {
         if let Ok(about) = AboutDialog::new() {
+            about.set_font_size(16.0);
+            about.set_version(env!("CARGO_PKG_VERSION").into());
+            about.set_home_page(env!("CARGO_PKG_REPOSITORY").into());
+            about.set_license(env!("CARGO_PKG_LICENSE").into());
             about.show().unwrap();
             let about_weak = about.as_weak();
             about.on_close(move || {
