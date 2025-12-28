@@ -16,12 +16,12 @@ impl Default for GameConfig {
         Self {
             row_count: 10,
             col_count: 15,
-            bomb_count: 100,
+            bomb_count: 50,
         }
     }
 }
 
-pub fn empty_grid(game_config: &GameConfig) -> Vec<ModelRc<Tile>> {
+pub fn new_grid(game_config: &GameConfig) -> Vec<ModelRc<Tile>> {
     let mut buttons_grid = Vec::new();
 
     for row in 0..game_config.row_count {
@@ -34,6 +34,7 @@ pub fn empty_grid(game_config: &GameConfig) -> Vec<ModelRc<Tile>> {
                 },
                 value: 0,
                 visible: false,
+                flagged: false,
             });
         }
         buttons_grid.push(VecModel::from_slice(&row_vec));
@@ -77,11 +78,11 @@ pub fn fill_grid(game_config: &GameConfig, first_move: Position) -> Vec<ModelRc<
                 Some(_) => -1,
                 None => 0,
             };
-            let visible = false;
             row_vec.push(Tile {
                 position,
                 value,
-                visible,
+                visible: false,
+                flagged: false,
             });
         }
         buttons_grid.push(row_vec);
@@ -104,9 +105,7 @@ pub fn fill_grid(game_config: &GameConfig, first_move: Position) -> Vec<ModelRc<
     }
 
     // Showing clicked Button and Around
-    let first_move_tile = &mut buttons_grid[first_move.row as usize][first_move.col as usize];
-    first_move_tile.visible = true;
-    for index in surronding_indicies(game_config, &first_move) {
+    for index in zero_weights {
         let position = index_to_position(game_config, index);
         let tile = &mut buttons_grid[position.row as usize][position.col as usize];
         tile.visible = true;

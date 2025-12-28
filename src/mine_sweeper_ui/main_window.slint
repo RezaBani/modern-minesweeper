@@ -3,6 +3,7 @@ import {
     VerticalBox,
     HorizontalBox,
     StandardButton,
+    ScrollView,
 } from "std-widgets.slint";
 
 export struct Position {
@@ -14,6 +15,7 @@ export struct Tile {
     position: Position,
     value: int, // -1 indicate there is a bomb
     visible: bool,
+    flagged: bool,
 }
 
 export enum GameState {
@@ -25,65 +27,115 @@ export enum GameState {
 
 export component MainWindow inherits Window {
     // Custom Properties
+    out property <int> mine_value: -1;
     in property <[[Tile]]> buttons_grid;
     out property <GameState> state: Initial;
 
     // callbacks
     callback first_move_occured(position: Position);
-    callback close();
     callback restart();
+    callback close();
 
     // public functions
-    public pure function bomb(value: int) -> bool {
-        return value == -1;
-    }
-    public pure function button_value_to_text(value: int) -> string {
-        if bomb(value) {
-            return "*";
-        } else if value == 0 {
-            return " ";
+    public pure function tile_to_img(tile: Tile) -> image {
+        if tile.flagged {
+            return @image-url("resources/icons/flag.svg");
+        } else if tile.visible {
+            if tile.value == mine_value {
+                return @image-url("resources/icons/warning.svg");
+            } else if tile.value == 0 {
+                return @image-url("resources/icons/blank.svg");
+            } else if tile.value == 1 {
+                return @image-url("resources/icons/1.svg");
+            } else if tile.value == 2 {
+                return @image-url("resources/icons/2.svg");
+            } else if tile.value == 3 {
+                return @image-url("resources/icons/3.svg");
+            } else if tile.value == 4 {
+                return @image-url("resources/icons/4.svg");
+            } else if tile.value == 5 {
+                return @image-url("resources/icons/5.svg");
+            } else if tile.value == 6 {
+                return @image-url("resources/icons/6.svg");
+            } else if tile.value == 7 {
+                return @image-url("resources/icons/7.svg");
+            } else if tile.value == 8 {
+                return @image-url("resources/icons/8.svg");
+            } else {
+                return @image-url("resources/icons/empty.svg");
+            }
         } else {
-            value
+            return @image-url("resources/icons/empty.svg");
         }
     }
 
     title: "MineSweeper";
-    default-font-size: 30px;
+    icon: @image-url("resources/icons/minesweeper.svg");
+    default-font-size: 28px;
     preferred-width: 1280px;
     preferred-height: 720px;
 
-    if state == GameState.Initial || state == GameState.Normal: VerticalBox {
-        for row[i] in buttons_grid: HorizontalBox {
-            for button[j] in row: Button {
-                text: button.visible ? button_value_to_text(button.value) : "";
-                clicked => {
-                    if root.state == GameState.Initial {
-                        first_move_occured(button.position);
-                        root.state = GameState.Normal;
-                    }
-                    button.visible = true;
-                    self.text = button_value_to_text(button.value);
-                    if bomb(button.value) {
-                        root.state = GameState.Lose;
+    VerticalBox {
+        scroll := ScrollView {
+            enabled: root.state == GameState.Initial || root.state == GameState.Normal;
+            VerticalLayout {
+                alignment: center;
+                for row[i] in buttons_grid: HorizontalLayout {
+                    alignment: center;
+                    for button[j] in row: Rectangle {
+                        height: btn_img.height;
+                        width: btn_img.width;
+                        btn_img := Image {
+                            source: tile_to_img(button);
+                            width: 40px;
+                            height: 40px;
+                        }
+
+                        touch := TouchArea {
+                            enabled: scroll.enabled && !(button.visible && button.value == 0);
+                            pointer-event(event) => {
+                                if event.button == PointerEventButton.right && event.kind == PointerEventKind.up {
+                                    if !button.visible && !button.flagged {
+                                        button.flagged = true;
+                                    } else if !button.visible && button.flagged {
+                                        button.flagged = false;
+                                    }
+                                } else if event.button == PointerEventButton.left && event.kind == PointerEventKind.up {
+                                    if button.flagged {
+                                        button.flagged = false;
+                                    } else {
+                                        if root.state == GameState.Initial {
+                                            first_move_occured(button.position);
+                                            root.state = GameState.Normal;
+                                        }
+                                        button.visible = true;
+                                        if button.value == mine_value {
+                                            root.state = GameState.Lose;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-    }
-    if state == GameState.Lose || state == GameState.Win: VerticalBox {
-        padding-top: 10px;
-        padding-bottom: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
-        spacing: 10px;
-        Text {
-            horizontal-alignment: center;
-            vertical-alignment: center;
-            text: state == GameState.Lose ? "Game Over" : "You Won";
-        }
 
         HorizontalBox {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            spacing: 10px;
+            Text {
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                text: state == GameState.Lose ? "State: Game Over" : state == GameState.Win ? "State: You Won" : "State: Normal";
+            }
+
             Button {
+                icon: @image-url("resources/icons/reset.svg");
+                icon-size: 28px;
                 text: "Restart";
                 clicked => {
                     root.state = GameState.Initial;
@@ -92,6 +144,8 @@ export component MainWindow inherits Window {
             }
 
             Button {
+                icon: @image-url("resources/icons/exit.svg");
+                icon-size: 28px;
                 text: "Quit";
                 clicked => {
                     root.close();
