@@ -1,1 +1,1 @@
-pub mod mine_sweeper_ui;
+pub mod controller;

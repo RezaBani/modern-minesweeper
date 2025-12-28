@@ -1,8 +1,7 @@
-mod main_window;
+slint::include_modules!();
 
-pub use main_window::*;
 use rand::{self, seq::index::sample_weighted};
-use slint::{Model, ModelRc, VecModel};
+use slint::{Model as _, ModelRc, VecModel};
 
 pub const MINE_VALUE: i32 = -1;
 

@@ -1,10 +1,12 @@
-use std::{cell::RefCell, env, rc::Rc};
+// Prevent console window in addition to Slint window in Windows release builds when, e.g., starting the app via file manager. Ignored on other platforms.
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use modern_minesweeper::mine_sweeper_ui::{
+use modern_minesweeper::controller::{
     AboutDialog, GameConfig, GameState, MINE_VALUE, MainWindow, check_win, clear_grid,
     expand_selection, fill_grid, new_grid, vec2d_to_model_grid,
 };
 use slint::ComponentHandle;
+use std::{cell::RefCell, env, rc::Rc};
 
 fn main() -> Result<(), slint::PlatformError> {
     unsafe {
