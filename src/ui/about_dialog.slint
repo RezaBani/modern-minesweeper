@@ -10,11 +10,12 @@ export component AboutDialog inherits Dialog {
     in property <string> version;
     in property <string> home_page;
     in property <string> license;
-    in property <length> font-size <=> self.default-font-size;
+    in property <length> text-font-size: self.default-font-size;
     icon: @image-url("resources/icons/info.svg");
     callback close();
     VerticalBox {
         Text {
+            font-size: text-font-size;
             text: "Version: \{version}\nHomePage: \{home_page}\nLicense: \{license}";
         }
 

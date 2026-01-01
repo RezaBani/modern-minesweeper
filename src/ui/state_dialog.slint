@@ -9,11 +9,12 @@ import { GameState } from "types.slint";
 export component StateDialog inherits Dialog {
     title: state == GameState.Lose ? "Game Over" : state == GameState.Win ? "You Win" : "Unknown";
     in property <GameState> state;
-    in property <length> font-size <=> self.default-font-size;
+    in property <length> text-font-size: self.default-font-size;
     icon: @image-url("resources/icons/info.svg");
     callback close();
     VerticalBox {
         Text {
+            font-size: text-font-size;
             text: "\{root.title}";
             color: state == GameState.Lose ? brown : state == GameState.Win ? green : white;
         }

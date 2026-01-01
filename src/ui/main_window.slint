@@ -13,7 +13,7 @@ export component MainWindow inherits Window {
     in property <int> mine_value;
     in property <[[Tile]]> grid;
     in property <GameState> state: Initial;
-    in property <length> font-size <=> self.default-font-size;
+    in property <length> text-font-size: self.default-font-size;
     in property <[string]> levels;
     property <bool> m_initial_level_set:false;
     in-out property <int> flags;
@@ -150,12 +150,14 @@ export component MainWindow inherits Window {
             }
 
             timer_text := Text {
+                font-size: text-font-size;
                 horizontal-alignment: center;
                 vertical-alignment: center;
                 text: "Time: \{timer.time_elapsed / 1s} sec";
             }
 
             Text {
+                font-size: text-font-size;
                 horizontal-alignment: left;
                 vertical-alignment: center;
                 text: "Flags: \{root.flags}";

@@ -25,13 +25,13 @@ fn main() -> Result<(), slint::PlatformError> {
     // Empty Grid
     let tiles = Rc::new(RefCell::new(new_grid(&*game_config.borrow())));
     let model = vec2d_to_model_grid(&*tiles.borrow());
-    let font_size = 28.0;
+    let text_font_size = 28.0;
     let main_window = MainWindow::new()?;
     main_window.set_grid(model);
     main_window.set_state(GameState::Initial);
     main_window.set_mine_value(MINE_VALUE);
     main_window.set_flags(game_config.borrow().mine_count as i32);
-    main_window.set_font_size(font_size);
+    main_window.set_text_font_size(text_font_size);
     main_window.set_levels(GameDifficulty::create_model());
     main_window.invoke_initial_level((*level.borrow()).into());
 
@@ -96,7 +96,7 @@ fn main() -> Result<(), slint::PlatformError> {
         ) {
             main_window_weak.unwrap().set_state(GameState::Lose);
             // State Dialog
-            create_state_dialog(state_dialog_cloned.clone(), font_size);
+            create_state_dialog(state_dialog_cloned.clone(), text_font_size);
             let state_dialog = state_dialog_cloned.borrow();
             let state_dialog = state_dialog.as_ref().unwrap();
             state_dialog.set_state(GameState::Lose);
@@ -123,7 +123,7 @@ fn main() -> Result<(), slint::PlatformError> {
         if tile.value == MINE_VALUE {
             main_window_weak.unwrap().set_state(GameState::Lose);
             // State Dialog
-            create_state_dialog(state_dialog_cloned.clone(), font_size);
+            create_state_dialog(state_dialog_cloned.clone(), text_font_size);
             let state_dialog = state_dialog_cloned.borrow();
             let state_dialog = state_dialog.as_ref().unwrap();
             state_dialog.set_state(GameState::Lose);
@@ -139,7 +139,7 @@ fn main() -> Result<(), slint::PlatformError> {
     main_window.on_check_win(move || {
         if check_win(&*game_config_cloned.borrow(), &*tiles_cloned.borrow()) {
             main_window_weak.unwrap().set_state(GameState::Win);
-            create_state_dialog(state_dialog_cloned.clone(), font_size);
+            create_state_dialog(state_dialog_cloned.clone(), text_font_size);
             let state_dialog = state_dialog_cloned.borrow();
             let state_dialog = state_dialog.as_ref().unwrap();
             state_dialog.set_state(GameState::Win);
@@ -210,7 +210,7 @@ fn create_state_dialog(state_dialog: Rc<RefCell<Option<StateDialog>>>, font_size
         state_dialog.replace(Some(StateDialog::new().unwrap()));
         let state_dialog = state_dialog.borrow();
         let state_dialog = state_dialog.as_ref().unwrap();
-        state_dialog.set_font_size(font_size);
+        state_dialog.set_text_font_size(font_size);
         let state_dialog_weak = state_dialog.as_weak();
         state_dialog.on_close(move || {
             state_dialog_weak
@@ -226,7 +226,7 @@ fn create_about_dialog(about_dialog: Rc<RefCell<Option<AboutDialog>>>) {
         about_dialog.replace(Some(AboutDialog::new().unwrap()));
         let about_dialog = about_dialog.borrow();
         let about_dialog = about_dialog.as_ref().unwrap();
-        about_dialog.set_font_size(16.0);
+        about_dialog.set_text_font_size(16.0);
         about_dialog.set_version(env!("CARGO_PKG_VERSION").into());
         about_dialog.set_home_page(env!("CARGO_PKG_REPOSITORY").into());
         about_dialog.set_license(env!("CARGO_PKG_LICENSE").into());
