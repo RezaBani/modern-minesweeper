@@ -28,6 +28,7 @@ export component MainWindow inherits Window {
     callback close();
     callback about();
     callback level_changed(int);
+    pure callback zero_pad(number: int, length: int) -> string;
 
     // public functions
     // For Setting Initial Value of ComboBox
@@ -140,6 +141,7 @@ export component MainWindow inherits Window {
             padding-left: 10px;
             padding-right: 10px;
             spacing: 10px;
+            alignment: stretch;
             timer := Timer {
                 property <duration> time_elapsed;
                 interval: 1s;
@@ -150,21 +152,33 @@ export component MainWindow inherits Window {
             }
 
             timer_text := Text {
+                horizontal-stretch: 0.0;
                 font-size: text-font-size;
                 horizontal-alignment: center;
                 vertical-alignment: center;
-                text: "Time: \{timer.time_elapsed / 1s} sec";
+                text: "Time: \{zero_pad(timer.time_elapsed / 1s, 3)} sec";
+            }
+
+            Window {
+                width: 20px;
+                horizontal-stretch: 0.0;
             }
 
             Text {
+                horizontal-stretch: 0.0;
                 font-size: text-font-size;
                 horizontal-alignment: left;
                 vertical-alignment: center;
-                text: "Flags: \{root.flags}";
+                text: "Flags: \{zero_pad(root.flags, 2)}";
                 color: red;
             }
 
+            Window {
+                horizontal-stretch: 1.0;
+            }
+
             levels_combo := ComboBox {
+                horizontal-stretch: 0.0;
                 enabled: root.state == GameState.Initial;
                 model: levels;
                 selected() => {
@@ -172,15 +186,24 @@ export component MainWindow inherits Window {
                 }
             }
 
-            Button {
-                icon: @image-url("resources/icons/reset.svg");
-                text: "Restart";
-                clicked => {
-                    root.restart();
+            Rectangle {
+                background: state == GameState.Lose || state == GameState.Win ? green : transparent;
+                Button {
+                    horizontal-stretch: 0.0;
+                    icon: @image-url("resources/icons/reset.svg");
+                    text: "Restart";
+                    clicked => {
+                        root.restart();
+                    }
                 }
             }
 
+            Window {
+                horizontal-stretch: 1.0;
+            }
+
             Button {
+                horizontal-stretch: 0.0;
                 icon: @image-url("resources/icons/info.svg");
                 text: "About";
                 clicked => {
@@ -189,6 +212,7 @@ export component MainWindow inherits Window {
             }
 
             Button {
+                horizontal-stretch: 0.0;
                 icon: @image-url("resources/icons/exit.svg");
                 text: "Quit";
                 clicked => {

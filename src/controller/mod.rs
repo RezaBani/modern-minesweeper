@@ -390,3 +390,12 @@ fn surronding_indicies(game_config: &GameConfig, position: &Position) -> Vec<usi
     }
     indicies
 }
+
+pub fn zero_pad(number: i32, length: i32) -> String {
+    let mut value = number.to_string();
+    let diff = length - value.len() as i32;
+    if diff > 0 {
+        value = "0".repeat(diff as usize) + value.as_str();
+    }
+    value
+}

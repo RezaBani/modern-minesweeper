@@ -4,7 +4,7 @@
 use modern_minesweeper::controller::{
     AboutDialog, GameConfig, GameDifficulty, GameState, MINE_VALUE, MainWindow, StateDialog,
     change_flag, change_visibility, check_win, clear_grid, expand_selection, fill_grid, new_grid,
-    vec2d_to_model_grid,
+    vec2d_to_model_grid, zero_pad,
 };
 use slint::ComponentHandle;
 use std::{cell::RefCell, env, rc::Rc};
@@ -34,6 +34,7 @@ fn main() -> Result<(), slint::PlatformError> {
     main_window.set_text_font_size(text_font_size);
     main_window.set_levels(GameDifficulty::create_model());
     main_window.invoke_initial_level((*level.borrow()).into());
+    main_window.on_zero_pad(|number, length| zero_pad(number, length).into());
 
     // First Move Occured
     let main_window_weak = main_window.as_weak();
