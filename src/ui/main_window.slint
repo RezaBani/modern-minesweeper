@@ -105,25 +105,25 @@ export component MainWindow inherits Window {
                                     if !button.visible && !button.flagged {
                                         button.flagged = true;
                                         root.flags -= 1;
-                                        change_flag(button.position,button.flagged);
+                                        change_flag({ row:i, col:j },button.flagged);
                                     } else if !button.visible && button.flagged {
                                         button.flagged = false;
                                         root.flags += 1;
-                                        change_flag(button.position,button.flagged);
+                                        change_flag({ row:i, col:j },button.flagged);
                                     }
                                     check_win()
                                 } else if event.button == PointerEventButton.left && event.kind == PointerEventKind.up {
                                     if button.flagged {
                                         button.flagged = false;
                                         root.flags += 1;
-                                        change_flag(button.position,button.flagged);
+                                        change_flag({ row:i, col:j },button.flagged);
                                     } else {
                                         if root.state == GameState.Initial {
-                                            first_move_occured(button.position);
+                                            first_move_occured({ row:i, col:j });
                                         }
                                         button.visible = true;
-                                        change_visibility(button.position, true);
-                                        expand_selection(button.position);
+                                        change_visibility({ row:i, col:j }, true);
+                                        expand_selection({ row:i, col:j });
                                     }
                                     check_win()
                                 }

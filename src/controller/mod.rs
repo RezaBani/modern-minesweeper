@@ -58,14 +58,10 @@ pub struct GameOver;
 pub fn new_grid(game_config: &GameConfig) -> Vec<Vec<Tile>> {
     let mut tiles = Vec::new();
 
-    for row in 0..game_config.row_count {
+    for _ in 0..game_config.row_count {
         let mut row_vec = Vec::new();
-        for col in 0..game_config.col_count {
+        for _ in 0..game_config.col_count {
             row_vec.push(Tile {
-                position: Position {
-                    row: row as i32,
-                    col: col as i32,
-                },
                 value: 0,
                 visible: false,
                 flagged: false,
@@ -107,12 +103,17 @@ pub fn fill_grid(game_config: &GameConfig, first_move: Position, tiles: &mut Vec
         .into_vec();
 
     // Setting The Bombs on the Grid
-    for row in tiles.iter_mut() {
-        for tile in row {
-            let value = match bombs_index
-                .iter()
-                .find(|b| **b == position_to_index(game_config, &tile.position))
-            {
+    for (i, row) in tiles.iter_mut().enumerate() {
+        for (j, tile) in row.iter_mut().enumerate() {
+            let value = match bombs_index.iter().find(|b| {
+                **b == position_to_index(
+                    game_config,
+                    &Position {
+                        row: i as i32,
+                        col: j as i32,
+                    },
+                )
+            }) {
                 Some(_) => MINE_VALUE,
                 None => 0,
             };
@@ -121,11 +122,17 @@ pub fn fill_grid(game_config: &GameConfig, first_move: Position, tiles: &mut Vec
     }
 
     // Setting The Numbers
-    for row in tiles.iter_mut() {
-        for tile in row {
+    for (i, row) in tiles.iter_mut().enumerate() {
+        for (j, tile) in row.iter_mut().enumerate() {
             if tile.value != MINE_VALUE {
                 let mut bombs = 0;
-                let around = surronding_indicies(game_config, &tile.position);
+                let around = surronding_indicies(
+                    game_config,
+                    &Position {
+                        row: i as i32,
+                        col: j as i32,
+                    },
+                );
                 for index in around {
                     if bombs_index.contains(&index) {
                         bombs += 1;
